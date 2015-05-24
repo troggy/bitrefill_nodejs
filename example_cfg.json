@@ -1,3 +1,1 @@
-{
-  "bitrefill":{"key":"", "secret":"", "url": "api.bitrefill.com/v1/"}
-}
+{"key":"", "secret":"", "url": "api.bitrefill.com/v1/"}

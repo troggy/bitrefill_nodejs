@@ -4,7 +4,7 @@
   "description": "A nodejs plugin for the bitrefill API",
   "main": "bitrefill.js",
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

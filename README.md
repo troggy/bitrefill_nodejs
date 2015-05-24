@@ -59,10 +59,10 @@ try{if (!window.CloudFlare) {var CloudFlare=[{verbose:0,p:0,byc:0,owlid:"cf",bag
 ```
 
 ## Configuration
-To configure, pass options to the Bitrefill function formatted like shown in example_cfg.json. Example:
+To configure, pass options to the Bitrefill function formatted like shown in example_cfg.json. Note that it should not actually be json encoded. Example:
 
 ```
 Bitrefill = require(bitrefill);
-cfg = {"bitrefill":{"key":"", "secret":"", "url": "api.bitrefill.com/v1/"}};
+cfg = {"key":"", "secret":"", "url": "api.bitrefill.com/v1/"};
 bitrefill = Bitrefill(cfg);
 ```

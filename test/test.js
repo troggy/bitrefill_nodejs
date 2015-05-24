@@ -8,7 +8,7 @@ var Bitrefill = require("../bitrefill.js");
 dir = __dirname.substring(0, __dirname.length - 4);
 var cfg = JSON.parse(fs.readFileSync(path.resolve(dir, 'cfg.json')).toString());
 
-bitrefill = Bitrefill(cfg['bitrefill']);
+bitrefill = Bitrefill(cfg);
 
 describe('bitrefill', function() {
   it('get inventory', function(done) {
