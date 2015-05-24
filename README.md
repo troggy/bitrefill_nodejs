@@ -1,7 +1,12 @@
 # Bitrefill NodeJS client
 A NodeJS client for the Bitrefill API. Bitrefill lets you pay phone bills in 127 countries.
 
+## Website
 https://www.bitrefill.com/
+
+## Documentation
+
+http://docs.bitrefill.apiary.io/#
 
 ## Install
 ```bash
