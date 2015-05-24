@@ -24,7 +24,7 @@ describe('bitrefill', function() {
   });
 
   it('look up a Digicel Panama number', function(done) {
-    bitrefill.lookup_number('50762000001', 'digicel-panama', function(err, res) {
+    bitrefill.lookup_number('50760000001', 'digicel-panama', function(err, res) {
       if (err != undefined) {
         return done(err);
       }
@@ -37,7 +37,7 @@ describe('bitrefill', function() {
   });
 
   it('Get a quote for a Digicel Panama number', function(done) {
-    bitrefill.place_order('50762000001', 'digicel-panama', 5, 'example@deginner.com', function(err, res) {
+    bitrefill.place_order('50760000001', 'digicel-panama', "5", 'example@deginner.com', function(err, res) {
       if (err != undefined) {
         return done(err);
       }
@@ -53,14 +53,19 @@ describe('bitrefill', function() {
   });
 
   it('look up a Digicel Panama order status', function(done) {
-    bitrefill.order_status('550528e417b8390300fb4734', function(err, res) {
+    bitrefill.place_order('50760000001', 'digicel-panama', "5", 'example@deginner.com', function(err, res) {
       if (err != undefined) {
         return done(err);
       }
-      should.exist(res);
-      res.should.have.property("delivered");
-      res.should.have.property("paymentReceived");
-      done();
+      bitrefill.order_status(res['orderId'], function(err, res) {
+        if (err != undefined) {
+          return done(err);
+        }
+        should.exist(res);
+        res.should.have.property("delivered");
+        res.should.have.property("paymentReceived");
+        done();
+      });
     });
   });
 });

@@ -1,10 +1,10 @@
 {
   "name": "bitrefill",
-  "version": "0.0.1",
-  "description": "A nodejs plugin for the bitrefill API",
+  "version": "0.0.2",
+  "description": "A nodejs plugin for the bitrefill API. Buy mobile credit with bitcoin.",
   "main": "bitrefill.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha -t 5000"
   },
   "repository": {
     "type": "git",
