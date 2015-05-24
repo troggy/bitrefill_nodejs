@@ -7,11 +7,12 @@ var cfg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'cfg.json')).toStri
 var apiKey = cfg.bitrefill.key;
 var apiSecret = cfg.bitrefill.secret;
 var base_url = cfg.bitrefill.url;
+var authstring = "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64");
 
 exports.inventory = function(cb) {
   request.get({url: "https://" + base_url + "inventory/",
-    'headers': {
-      "Authorization": "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64")
+    headers: {
+      Authorization: authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -36,8 +37,8 @@ exports.lookup_number = function(number, operator, cb) {
   }
   var qs = querystring.stringify(args);
   request.get({url: "https://" + base_url + "lookup_number/?" + qs,
-    'headers': {
-      "Authorization": "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64")
+    headers: {
+      Authorization: authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -58,12 +59,12 @@ exports.lookup_number = function(number, operator, cb) {
 exports.place_order = function(number, operator, pack, email, cb) {
   var args = {'number': number, 'package': pack,
               'operatorSlug': operator, 'email': email}
-  var qs = querystring.stringify(args)
-  var url = "https://" + base_url + "/order/order_id"
+  // var qs = querystring.stringify(args)
+  var url = "https://" + base_url + "/order/order_id/";
   request.post({url: url,
     headers: {
       'Content-Type': 'application/json',
-      "Authorization": "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64")
+      Authorization: authstring
     },
     body: JSON.stringify(args)
   }, function (error, response, body) {
@@ -79,5 +80,30 @@ exports.place_order = function(number, operator, pack, email, cb) {
         cb(undefined, quote);
       }
     }
-  });//.form(args);
+  });
+};
+
+exports.order_status = function(order_id, cb) {
+  var url = "https://" + base_url + "/order/" + order_id;
+  request.post({url: url,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: authstring
+    }
+  }, function (error, response, body) {
+    if (error != undefined) {
+      cb(error, undefined);
+    } else if (response.statusCode != 200) {
+      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
+    } else {
+      quote = JSON.parse(body);
+      if (quote.hasOwnProperty('error')) {
+        cb(quote['error'], undefined)
+      } else if (quote.hasOwnProperty('errorMessage')) {
+        cb(quote['errorMessage'], undefined)
+      } else {
+        cb(undefined, quote);
+      }
+    }
+  });
 };
