@@ -1,18 +1,26 @@
-var fs = require('fs')
-var path = require('path')
+var assert = require('assert')
 var request = require('request')
 var querystring = require("querystring");
-var cfg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'cfg.json')).toString());
 
-var apiKey = cfg.bitrefill.key;
-var apiSecret = cfg.bitrefill.secret;
-var base_url = cfg.bitrefill.url;
-var authstring = "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64");
+module.exports = Bitrefill
 
-exports.inventory = function(cb) {
-  request.get({url: "https://" + base_url + "inventory/",
+function Bitrefill(cfg) {
+  if (!(this instanceof Bitrefill))
+    return new Bitrefill(cfg)
+
+  this.cfg = cfg
+
+  assert(this.cfg, 'cfg is required')
+  assert(this.cfg.key, 'cfg.key is required')
+  assert(this.cfg.secret, 'cfg.secret is required')
+  assert(this.cfg.url, 'cfg.url is required')
+  this.authstring = "Basic " + new Buffer(this.cfg.key + ":" + this.cfg.secret).toString("base64");
+}
+
+Bitrefill.prototype.inventory = function(cb) {
+  request.get({url: "https://" + this.cfg.url + "inventory/",
     headers: {
-      Authorization: authstring
+      Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -30,15 +38,15 @@ exports.inventory = function(cb) {
   });
 };
 
-exports.lookup_number = function(number, operator, cb) {
+Bitrefill.prototype.lookup_number = function(number, operator, cb) {
   var args = {'number': number};
   if (operator != undefined) {
     args['operatorSlug'] = operator;
   }
   var qs = querystring.stringify(args);
-  request.get({url: "https://" + base_url + "lookup_number/?" + qs,
+  request.get({url: "https://" + this.cfg.url + "lookup_number/?" + qs,
     headers: {
-      Authorization: authstring
+      Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -56,15 +64,15 @@ exports.lookup_number = function(number, operator, cb) {
   });
 };
 
-exports.place_order = function(number, operator, pack, email, cb) {
+Bitrefill.prototype.place_order = function(number, operator, pack, email, cb) {
   var args = {'number': number, 'package': pack,
               'operatorSlug': operator, 'email': email}
   // var qs = querystring.stringify(args)
-  var url = "https://" + base_url + "/order/order_id/";
+  var url = "https://" + this.cfg.url + "/order/order_id/";
   request.post({url: url,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: authstring
+      Authorization: this.authstring
     },
     body: JSON.stringify(args)
   }, function (error, response, body) {
@@ -83,12 +91,12 @@ exports.place_order = function(number, operator, pack, email, cb) {
   });
 };
 
-exports.order_status = function(order_id, cb) {
-  var url = "https://" + base_url + "/order/" + order_id;
+Bitrefill.prototype.order_status = function(order_id, cb) {
+  var url = "https://" + this.cfg.url + "/order/" + order_id;
   request.post({url: url,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: authstring
+      Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {

@@ -3,9 +3,27 @@
   "version": "0.0.1",
   "description": "A nodejs plugin for the bitrefill API",
   "main": "bitrefill.js",
-  "repository": "",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/bearbones/bitrefill_nodejs.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "bitrefill",
+    "mobile",
+    "api",
+    "client"
+  ],
   "author": "Ira Miller <ira@deginner.com>",
+  "license": "MIT",
   "dependencies": {
-    "request": "~2.55.1",
+    "request": "~2.55.1"
+  },
+  "devDependencies": {
+    "mocha": "~2.1.0",
+    "should": "~4.6.0"
   }
 }
