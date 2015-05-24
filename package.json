@@ -1,6 +1,6 @@
 {
   "name": "bitrefill",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A nodejs plugin for the bitrefill API. Buy mobile credit with bitcoin.",
   "main": "bitrefill.js",
   "scripts": {
