@@ -14,8 +14,18 @@ exports.inventory = function(cb) {
       "Authorization": "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64")
     }
   }, function (error, response, body) {
-    inventory = JSON.parse(body);
-    cb(undefined, inventory)
+    if (error != undefined) {
+      cb(error, undefined);
+    } else if (response.statusCode != 200) {
+      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
+    } else {
+      inventory = JSON.parse(body);
+      if (inventory.hasOwnProperty('error')) {
+        cb(inventory['error'], undefined)
+      } else {
+        cb(undefined, inventory);
+      }
+    }
   });
 };
 
@@ -32,6 +42,8 @@ exports.lookup_number = function(number, operator, cb) {
   }, function (error, response, body) {
     if (error != undefined) {
       cb(error, undefined);
+    } else if (response.statusCode != 200) {
+      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
     } else {
       quote = JSON.parse(body);
       if (quote.hasOwnProperty('error')) {
@@ -45,19 +57,21 @@ exports.lookup_number = function(number, operator, cb) {
 
 exports.place_order = function(number, operator, pack, email, cb) {
   var args = {'number': number, 'package': pack,
-                        'operatorSlug': operator, 'email': email}
+              'operatorSlug': operator, 'email': email}
   var qs = querystring.stringify(args)
-  // var url = "https://" + base_url + "/order/order_id/?" + qs
   var url = "https://" + base_url + "/order/order_id"
   request.post({url: url,
-    'headers': {
+    headers: {
+      'Content-Type': 'application/json',
       "Authorization": "Basic " + new Buffer(apiKey + ":" + apiSecret).toString("base64")
-    }
+    },
+    body: JSON.stringify(args)
   }, function (error, response, body) {
     if (error != undefined) {
       cb(error, undefined);
+    } else if (response.statusCode != 200) {
+      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
     } else {
-      console.log(body);
       quote = JSON.parse(body);
       if (quote.hasOwnProperty('error')) {
         cb(quote['error'], undefined)
@@ -65,5 +79,5 @@ exports.place_order = function(number, operator, pack, email, cb) {
         cb(undefined, quote);
       }
     }
-  }).form(args);
+  });//.form(args);
 };
