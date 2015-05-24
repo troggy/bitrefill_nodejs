@@ -14,7 +14,6 @@ function Bitrefill(cfg) {
   assert(this.cfg.key, 'cfg.key is required')
   assert(this.cfg.secret, 'cfg.secret is required')
   assert(this.cfg.url, 'cfg.url is required')
-  // this.authstring = "Basic " + new Buffer(this.cfg.key + ":" + this.cfg.secret).toString("base64");
   this.authurl = "https://" + this.cfg.key + ":" + this.cfg.secret + "@" + this.cfg.url;
 }
 
@@ -22,7 +21,6 @@ Bitrefill.prototype.inventory = function(cb) {
   request.get({url: this.authurl + "/inventory/",
     headers: {
       'Content-Type': 'application/json',
-      // Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -49,7 +47,6 @@ Bitrefill.prototype.lookup_number = function(number, operator, cb) {
   request.get({url: this.authurl + "/lookup_number/?" + qs,
     headers: {
       'Content-Type': 'application/json'
-      // Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
@@ -70,12 +67,10 @@ Bitrefill.prototype.lookup_number = function(number, operator, cb) {
 Bitrefill.prototype.place_order = function(number, operator, pack, email, cb) {
   var args = {'number': number, 'valuePackage': pack,
               'operatorSlug': operator, 'email': email}
-  // var qs = querystring.stringify(args)
   var url = this.authurl + "/order";
   request.post({url: url,
     headers: {
       'Content-Type': 'application/json'
-      // Authorization: this.authstring
     },
     body: JSON.stringify(args)
   }, function (error, response, body) {
@@ -99,7 +94,6 @@ Bitrefill.prototype.order_status = function(order_id, cb) {
   request.get({url: url,
     headers: {
       'Content-Type': 'application/json'
-      // Authorization: this.authstring
     }
   }, function (error, response, body) {
     if (error != undefined) {
