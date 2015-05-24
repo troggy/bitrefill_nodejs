@@ -1,0 +1,11 @@
+{
+  "name": "bitrefill",
+  "version": "0.0.1",
+  "description": "A nodejs plugin for the bitrefill API",
+  "main": "bitrefill.js",
+  "repository": "",
+  "author": "Ira Miller <ira@deginner.com>",
+  "dependencies": {
+    "request": "~2.55.1",
+  }
+}
