@@ -21,7 +21,11 @@ var handleResponse = function(cb) {
     if (error) {
       return cb(error);
     } else if (response.statusCode != 200) {
-      return cb(JSON.parse(body))
+      var bodyJSON;
+      try {
+        bodyJSON = JSON.parse(body);
+      } catch (e) { }
+      return cb(bodyJSON || response.statusText);
     } else {
       body = typeof body == 'object' ? body : JSON.parse(body);
       return cb(body.error || body.errorMessage, body);
