@@ -11,6 +11,8 @@ var cfg = JSON.parse(fs.readFileSync(path.resolve(dir, 'cfg.json')).toString());
 bitrefill = Bitrefill(cfg);
 
 describe('bitrefill', function() {
+  this.timeout(7000);
+  
   it('get inventory', function(done) {
     bitrefill.inventory(function(err, res) {
       if (err != undefined) {
@@ -42,12 +44,11 @@ describe('bitrefill', function() {
         return done(err);
       }
       should.exist(res);
-      res.should.have.property("btcPrice");
+      res.should.have.property("satoshiPrice");
       res.should.have.property("orderId");
       res.should.have.property("payment");
       res['payment'].should.have.property("address");
       res['payment'].should.have.property("human");
-      res['payment'].should.have.property("satoshiPrice");
       done();
     });
   });
