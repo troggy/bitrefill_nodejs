@@ -1,6 +1,5 @@
 var assert = require('assert')
 var request = require('request')
-var querystring = require("querystring");
 
 module.exports = Bitrefill
 
@@ -17,98 +16,54 @@ function Bitrefill(cfg) {
   this.authurl = "https://" + this.cfg.key + ":" + this.cfg.secret + "@" + this.cfg.url;
 }
 
-Bitrefill.prototype.inventory = function(cb) {
-  request.get({url: this.authurl + "/inventory/",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  }, function (error, response, body) {
-    if (error != undefined) {
-      cb(error, undefined);
+var handleResponse = function(cb) {
+  return function(error, response, body) {
+    if (error) {
+      return cb(error);
     } else if (response.statusCode != 200) {
-      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
+      return cb(JSON.parse(body))
     } else {
-      inventory = JSON.parse(body);
-      if (inventory.hasOwnProperty('error')) {
-        cb(inventory['error'], undefined)
-      } else {
-        cb(undefined, inventory);
-      }
+      body = typeof body == 'object' ? body : JSON.parse(body);
+      return cb(body.error || body.errorMessage, body);
     }
-  });
+  };
+};
+
+Bitrefill.prototype.inventory = function(cb) {
+  request.get({ 
+    url: this.authurl + "/inventory/"
+  }, handleResponse(cb));
 };
 
 Bitrefill.prototype.lookup_number = function(number, operator, cb) {
-  var args = {'number': number};
-  if (operator != undefined) {
-    args['operatorSlug'] = operator;
-  }
-  var qs = querystring.stringify(args);
-  request.get({url: this.authurl + "/lookup_number/?" + qs,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }, function (error, response, body) {
-    if (error != undefined) {
-      cb(error, undefined);
-    } else if (response.statusCode != 200) {
-      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
-    } else {
-      quote = JSON.parse(body);
-      if (quote.hasOwnProperty('error')) {
-        cb(quote['error'], undefined)
-      } else {
-        cb(undefined, quote);
-      }
-    }
-  });
+  var args = {
+    number: number,
+    operatorSlug: operator
+  };
+  
+  request.get({ 
+    url: this.authurl + "/lookup_number",
+    qs: args
+  }, handleResponse(cb));
 };
 
 Bitrefill.prototype.place_order = function(number, operator, pack, email, cb) {
-  var args = {'number': number, 'valuePackage': pack,
-              'operatorSlug': operator, 'email': email}
-  var url = this.authurl + "/order";
-  request.post({url: url,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(args)
-  }, function (error, response, body) {
-    if (error != undefined) {
-      cb(error, undefined);
-    } else if (response.statusCode != 200) {
-      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
-    } else {
-      quote = JSON.parse(body);
-      if (quote.hasOwnProperty('error')) {
-        cb(quote['error'], undefined)
-      } else {
-        cb(undefined, quote);
-      }
-    }
-  });
+  var args = {
+    number: number,
+    valuePackage: pack,
+    operatorSlug: operator,
+    email: email
+  };
+
+  request.post({ 
+    url: this.authurl + "/order",
+    body: args,
+    json: true
+  }, handleResponse(cb));
 };
 
 Bitrefill.prototype.order_status = function(order_id, cb) {
-  var url = this.authurl + "/order/" + order_id;
-  request.get({url: url,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }, function (error, response, body) {
-    if (error != undefined) {
-      cb(error, undefined);
-    } else if (response.statusCode != 200) {
-      cb("HTTP error: " + response.statusCode + " body: " + body, undefined)
-    } else {
-      quote = JSON.parse(body);
-      if (quote.hasOwnProperty('error')) {
-        cb(quote['error'], undefined)
-      } else if (quote.hasOwnProperty('errorMessage')) {
-        cb(quote['errorMessage'], undefined)
-      } else {
-        cb(undefined, quote);
-      }
-    }
-  });
+  request.get({ 
+    url: this.authurl + "/order/" + order_id
+  }, handleResponse(cb));
 };
